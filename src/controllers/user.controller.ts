@@ -55,8 +55,17 @@ const deleteProfile = async (req: AuthenticatedRequest, res: Response): Promise<
         res.status(401).json({ message: 'Unauthorized' });
         return;
     }
-    await userService.deleteUser(req.user.id);
-    res.json({ message: 'User deleted successfully' });
+
+    try {
+        await userService.deleteUser(req.user.id);
+        res.json({ message: 'User deleted successfully' });
+    } catch (error) {
+        // Cast `error` to `Error` to access `message`
+        const errorMessage = (error as Error).message;
+        console.info(errorMessage);
+        res.status(404).json({ message: errorMessage });
+    }
 };
+
 
 export default { signup, signin, getProfile, updateProfile, deleteProfile };

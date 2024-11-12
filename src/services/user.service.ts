@@ -93,6 +93,20 @@ const updateUser = async (id: number, data: Partial<UserData>) => {
         data
     });
 };
-const deleteUser = async (id: number) => prisma.user.delete({ where: { id } });
+const deleteUser = async (id: number) => {
+    // Check if the user exists
+    const user = await prisma.user.findUnique({
+        where: { id }
+    });
+
+    if (!user) {
+        throw new Error(`User with ID ${id} does not exist`);
+    }
+
+    // Delete the user if they exist
+    return prisma.user.delete({
+        where: { id }
+    });
+};
 
 export default { createUser, authenticateUser, getUserProfile, updateUser, deleteUser };
